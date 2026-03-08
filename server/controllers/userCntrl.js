@@ -9,7 +9,7 @@ export const createUser = asyncHandler(async (req, res) => {
     const user = await prisma.user.create({ data: req.body });
 
     return res.status(201).json({
-      message: 'User register successfully',
+      message: 'User registered successfully',
       user,
     });
   }
