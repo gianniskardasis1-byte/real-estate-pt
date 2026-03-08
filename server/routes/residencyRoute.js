@@ -1,7 +1,8 @@
 import express from 'express';
-import { createUser } from '../controllers/resdCntrl';
-const router = express.Router()
+import { createResidency } from '../controllers/resdCntrl.js';
 
-router.post("/create", createResidency)
+const router = express.Router();
 
-export {router as residencyRoute}
+router.post('/create', createResidency);
+
+export { router as residencyRoute };
