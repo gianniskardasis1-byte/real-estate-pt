@@ -8,7 +8,7 @@ The project is split into:
 - A MongoDB database accessed through Prisma ORM
 
 ## Overview
-
+test
 The app supports core real-estate workflows:
 - Browse all listings
 - Filter listings by listing type, region, property type, and max price
