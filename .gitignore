@@ -5,7 +5,7 @@ client/node_modules/
 
 # Environment variables
 .env
-env
+.env.*
 
 # Prisma
 server/prisma/config/
@@ -29,3 +29,6 @@ yarn-error.log*
 # Build output
 dist/
 build/
+
+# Auto-generated PDF files
+*.pdf
