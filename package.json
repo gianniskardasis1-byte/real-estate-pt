@@ -5,7 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "node ./node_modules/nodemon/bin/nodemon.js index.js"
+    "start": "node ./node_modules/nodemon/bin/nodemon.js index.js",
+    "seed": "node server/prisma/seed.js"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
