@@ -4,22 +4,21 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
 }
 
 model User {
-  id               String      @id @default(auto()) @map("_id") @db.ObjectId
+  id               String      @id @default(uuid()) @db.Uuid
   name             String?
   email            String      @unique
   image            String?
-  bookedVisits     Json[]
-  favResidenciesID String[]    @db.ObjectId
+  bookedVisits     Json[]      @default([])
+  favResidenciesID String[]    @default([])
   ownedResidencies Residency[] @relation("Owner")
 }
 
 model Residency {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  id           String   @id @default(uuid()) @db.Uuid
   title        String
   description  String
   price        Int
@@ -27,8 +26,8 @@ model Residency {
   city         String
   country      String   @default("Greece")
   region       String?
-  image        String
-  images       String[]
+  image        String?
+  images       String[] @default([])
   facilities   Json
   listingType  String   @default("sale")
   propertyType String   @default("apartment")

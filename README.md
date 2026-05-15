@@ -5,7 +5,7 @@ HomeFinder is a full-stack real estate web application for listing and browsing 
 The project is split into:
 - A React + Vite frontend in `client/`
 - An Express + Prisma backend at the repository root (server code in `server/`)
-- A MongoDB database accessed through Prisma ORM
+- A PostgreSQL database (Neon) accessed through Prisma ORM
 
 ## Overview
 
@@ -19,14 +19,15 @@ The app supports core real-estate workflows:
 ## Quick Start
 
 ### Prerequisites
-- Node.js 18+ (recommended: latest LTS)
+- Node.js 20.19+ or 22.12+ (required by Prisma 7.8)
 - npm
 
 ### Database
-- MongoDB connection string - written in .env file at project root
+- PostgreSQL connection string - written in .env file at project root (Neon recommended)
 
 ```env
-DATABASE_URL="mongodb+srv://<user>:<password>@<cluster>/<db>?retryWrites=true&w=majority"
+DATABASE_URL="postgresql://<user>:<password>@<host>/<db>?sslmode=require"
+DATABASE_URL_POOL="postgresql://<user>:<password>@<host>/<db>?sslmode=require&pgbouncer=true"
 PORT=8000
 ```
 
@@ -39,7 +40,9 @@ npm install #Install backend dependencies
 cd client
 npm install #Install frontend dependencies
 cd ..
-npx prisma generate --schema server/prisma/schema.prisma #generate Prisma client
+npx prisma generate --config prisma.config.ts #generate Prisma client (skip if already generated)
+npx prisma migrate dev --config prisma.config.ts #apply schema to Postgres (skip if already applied)
+npm run seed #seed mock data (skip if already seeded)
 
 npm start #Run backend - Starts Express with Nodemon using index.js
 
@@ -51,7 +54,9 @@ npm run dev #Starts frontend - Open URL printed by Vite (typically `http://local
 ```
 
 ### Notes
-- `DATABASE_URL` is required by Prisma (`server/prisma/schema.prisma`).
+- `DATABASE_URL` is required by Prisma CLI via `prisma.config.ts`.
+- Prisma 7 stores datasource URLs in `prisma.config.ts` (not in the schema file).
+- `DATABASE_URL_POOL` is optional and used by the API at runtime when set.
 - The frontend expects backend API at `http://localhost:8000` through Vite proxy.
 
 ## Tech Stack
@@ -66,8 +71,8 @@ npm run dev #Starts frontend - Open URL printed by Vite (typically `http://local
 
 ### Backend
 - Node.js + Express 5
-- Prisma Client / Prisma ORM 5
-- MongoDB datasource (via Prisma)
+- Prisma Client / Prisma ORM 7.8
+- PostgreSQL datasource (Neon)
 - express-async-handler
 - CORS, cookie-parser, dotenv
 
@@ -105,17 +110,17 @@ npm run dev #Starts frontend - Open URL printed by Vite (typically `http://local
 - Data model:
 	- `server/prisma/schema.prisma`
 
-## Data Model (Prisma + MongoDB)
+## Data Model (Prisma + PostgreSQL)
 
 ### User
-- `id` (ObjectId)
+- `id` (UUID)
 - `name`, `email` (unique), `image`
 - `bookedVisits` (JSON array)
-- `favResidenciesID` (ObjectId string array)
+- `favResidenciesID` (string array)
 - Relation: owns many `Residency` records via `email`
 
 ### Residency
-- `id` (ObjectId)
+- `id` (UUID)
 - Core fields: `title`, `description`, `price`, `address`, `city`
 - Optional/extended: `region`, `area`, `bedrooms`, `bathrooms`, `yearBuilt`, `images`
 - Classification: `listingType` (`sale|rent`), `propertyType`
@@ -165,6 +170,7 @@ Base URL: `http://localhost:8000/api`
 - No authentication/authorization is enforced on API routes yet.
 - No input validation middleware is present on backend endpoints.
 - Error handling is basic and mostly controller-level.
+- Spec items not implemented yet: 2FA, single-session enforcement, manager/admin roles, inquiries/notifications, payments, audit logs, and reporting.
 - Root workspace includes several unrelated/generated artifacts and utility files that are not required for core app execution.
 - `tasks.json` appears unrelated to this JavaScript project (Haskell tasks).
 
@@ -183,7 +189,7 @@ Base URL: `http://localhost:8000/api`
 	- Confirm Vite proxy is active in `client/vite.config.js`.
 - If Prisma cannot connect:
 	- Verify `DATABASE_URL` in root `.env`.
-	- Run `npx prisma generate --schema server/prisma/schema.prisma` again.
+	- Run `npx prisma generate --config prisma.config.ts` again.
 
 ## Team Notes
 

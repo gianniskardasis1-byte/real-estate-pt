@@ -6,6 +6,7 @@ client/node_modules/
 # Environment variables
 .env
 .env.*
+!.env.example
 
 # Prisma
 server/prisma/config/
